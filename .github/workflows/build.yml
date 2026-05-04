@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout Vial-QMK
         run: |
+          # Fix the "dubious ownership" error
+          git config --global --add safe.directory /__w/klavye/klavye
+          
           git clone https://github.com/vial-kb/vial-qmk.git .
           git submodule update --init --recursive
 
@@ -24,14 +27,9 @@ jobs:
 
       - name: Build Firmware
         run: |
-          # Create the directory structure inside the compiler's workspace
           mkdir -p keyboards/handwired/edin
-          
-          # Copy your files (including keyboard.json) exactly as they are
           cp -R my-config/keyboards/handwired/edin/* keyboards/handwired/edin/
           
-          # Run the compile command
-          # The -kb flag looks for the folder, and QMK will look for keyboard.json inside it
           qmk compile -kb handwired/edin -km vial
           
       - name: Upload Artifact
