@@ -20,7 +20,16 @@ jobs:
       - name: Build Firmware
         run: |
           qmk setup -y
+          # This line moves your folder so QMK can find it
+          mkdir -p qmk_firmware/keyboards/handwired
+          cp -R keyboards/handwired/edin qmk_firmware/keyboards/handwired/
+          
+          # Now run the compile command from inside the qmk_firmware folder
+          cd qmk_firmware
           qmk compile -kb handwired/edin -km vial
+          
+          # Move the result back to the root so the 'upload' step can find it
+          cp *.uf2 ..
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
