@@ -7,10 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     container: qmkfm/qmk_cli
     steps:
-      - name: Checkout
+      - name: Checkout Vial-QMK
+        run: |
+          git clone https://github.com/vial-kb/vial-qmk.git .
+          git submodule update --init --recursive
+
+      - name: Checkout Your Keyboard Files
         uses: actions/checkout@v4
         with:
-          submodules: recursive
+          path: my-config
 
       - name: Install ARM Toolchain
         run: |
@@ -19,17 +24,15 @@ jobs:
 
       - name: Build Firmware
         run: |
-          qmk setup -y
-          # This line moves your folder so QMK can find it
-          mkdir -p qmk_firmware/keyboards/handwired
-          cp -R keyboards/handwired/edin qmk_firmware/keyboards/handwired/
+          # Create the directory structure inside the compiler's workspace
+          mkdir -p keyboards/handwired/edin
           
-          # Now run the compile command from inside the qmk_firmware folder
-          cd qmk_firmware
+          # Copy your files (including keyboard.json) exactly as they are
+          cp -R my-config/keyboards/handwired/edin/* keyboards/handwired/edin/
+          
+          # Run the compile command
+          # The -kb flag looks for the folder, and QMK will look for keyboard.json inside it
           qmk compile -kb handwired/edin -km vial
-          
-          # Move the result back to the root so the 'upload' step can find it
-          cp *.uf2 ..
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
