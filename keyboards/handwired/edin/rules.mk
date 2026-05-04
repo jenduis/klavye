@@ -19,5 +19,4 @@ BOARD = GENERIC_RP2040
 
 # Features
 VIA_ENABLE = yes
-VIAL_ENABLE = yes
 LTO_ENABLE = yes
